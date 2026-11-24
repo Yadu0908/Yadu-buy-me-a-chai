@@ -424,6 +424,16 @@
   animation-play-state: paused;
 }
 
+/* Static edge feather mask for sticker image (fades baked-in frame edge at 98%) */
+.chai-sticker-mask {
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 80%, transparent 98%);
+  mask-image: radial-gradient(ellipse at center, #000 80%, transparent 98%);
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
 /* Hover effects: translateY(-2px) only on fine pointers */
 @media (hover: hover) and (pointer: fine) {
   .chai-interactive-hover {

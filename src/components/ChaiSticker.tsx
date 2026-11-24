@@ -86,13 +86,19 @@ export function ChaiSticker({ size = 'desktop', className = '' }: ChaiStickerPro
           loading="lazy"
           decoding="async"
           alt="Animated chai sticker"
-          className="pointer-events-none select-none object-contain"
+          className="chai-sticker-mask pointer-events-none select-none object-contain"
           style={{
             width: `${width}px`,
             height: `${height}px`,
             background: 'transparent',
             border: 0,
             outline: 'none',
+            WebkitMaskImage: 'radial-gradient(ellipse at center, #000 80%, transparent 98%)',
+            maskImage: 'radial-gradient(ellipse at center, #000 80%, transparent 98%)',
+            WebkitMaskSize: '100% 100%',
+            maskSize: '100% 100%',
+            WebkitMaskRepeat: 'no-repeat',
+            maskRepeat: 'no-repeat',
           }}
         />
         <a
