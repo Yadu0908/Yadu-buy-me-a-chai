@@ -33,8 +33,8 @@ export function ChaiSticker({
   }
 
   const isDesktop = size === 'desktop';
-  const width = isDesktop ? 100 : 90;
-  const height = isDesktop ? 170 : 153;
+  const width = isDesktop ? 65 : 90;
+  const height = isDesktop ? 110 : 153;
 
   return (
     <div className={`flex flex-col ${isDesktop ? 'items-end' : 'items-center'} ${className}`}>

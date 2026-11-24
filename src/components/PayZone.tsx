@@ -122,9 +122,9 @@ export function PayZone({
             </div>
           )}
 
-          {/* Compact card: max height about 240px on desktop */}
-          <div className="w-full rounded-[20px] border border-chai-line bg-chai-surface p-4 shadow-sm sm:p-4.5">
-            {/* Top row: Amount & UPI ID on left, QR (about 140px) on right */}
+          {/* Compact card: total block height at most 220px on desktop */}
+          <div className="w-full rounded-[20px] border border-chai-line bg-chai-surface px-3 py-2 shadow-sm sm:px-3.5 sm:py-2.5">
+            {/* Top row: Amount & UPI ID on left, QR (about 130px) on right */}
             <div className="flex items-center justify-between gap-3">
               {/* Left: Amount and UPI ID */}
               <div className="flex flex-col items-start justify-center">
@@ -135,10 +135,10 @@ export function PayZone({
                   <span className="text-[18px] font-semibold leading-none text-chai-accent sm:text-[20px]">
                     ₹
                   </span>
-                  <span className="relative inline-block h-[40px] overflow-hidden">
+                  <span className="relative inline-block h-[38px] overflow-hidden">
                     {prevAmount !== null && (
                       <span
-                        className="chai-amount-out absolute left-0 top-0 inline-block text-[36px] font-bold leading-none tracking-[-0.03em] sm:text-[40px]"
+                        className="chai-amount-out absolute left-0 top-0 inline-block text-[34px] font-bold leading-none tracking-[-0.03em] sm:text-[36px]"
                         aria-hidden="true"
                       >
                         {formatRupees(prevAmount)}
@@ -146,20 +146,20 @@ export function PayZone({
                     )}
                     <span
                       key={displayAmount}
-                      className={`${prevAmount !== null ? 'chai-amount-in' : ''} inline-block text-[36px] font-bold leading-none tracking-[-0.03em] sm:text-[40px]`}
+                      className={`${prevAmount !== null ? 'chai-amount-in' : ''} inline-block text-[34px] font-bold leading-none tracking-[-0.03em] sm:text-[36px]`}
                     >
                       {formatRupees(displayAmount ?? 0)}
                     </span>
                   </span>
                 </div>
-                <p aria-hidden="true" className="mt-1.5">
-                  <span className="inline-block whitespace-nowrap rounded-lg bg-chai-accent-soft px-2.5 py-1 font-vpa text-[12px] text-chai-ink">
+                <p aria-hidden="true" className="mt-1">
+                  <span className="inline-block whitespace-nowrap rounded-lg bg-chai-accent-soft px-2 py-0.5 font-vpa text-[12px] text-chai-ink">
                     {intent.vpa}
                   </span>
                 </p>
               </div>
 
-              {/* Right: QR Code (about 140px) */}
+              {/* Right: QR Code (about 130px) */}
               <div className="shrink-0">
                 {qr !== null ? (
                   <QrCode
@@ -169,20 +169,20 @@ export function PayZone({
                     showCaption={false}
                   />
                 ) : (
-                  <div className="flex h-[140px] w-[140px] items-center justify-center rounded-[14px] bg-chai-accent-soft p-2 text-center text-[12px] text-chai-muted">
+                  <div className="flex h-[126px] w-[126px] items-center justify-center rounded-[12px] bg-chai-accent-soft p-2 text-center text-[12px] text-chai-muted">
                     {strings.qrUnavailable}
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Buttons in one row under them: Copy UPI ID, Save QR, I've paid (36 to 40px high) */}
-            <div className="mt-3 flex w-full gap-2">
+            {/* Buttons in one row under them: Copy UPI ID, Save QR, I've paid (36px high) */}
+            <div className="mt-2 flex w-full gap-2">
               <button
                 type="button"
                 onClick={handleCopy}
                 aria-live="polite"
-                className="chai-interactive-hover inline-flex h-9 min-h-[36px] max-h-[40px] flex-1 items-center justify-center gap-1.5 rounded-full border border-chai-line px-2 text-[12px] font-semibold text-chai-ink transition-colors hover:border-chai-accent hover:text-chai-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chai-accent"
+                className="chai-interactive-hover inline-flex h-9 min-h-[36px] max-h-[36px] flex-1 items-center justify-center gap-1.5 rounded-full border border-chai-line px-2 text-[12px] font-semibold text-chai-ink transition-colors hover:border-chai-accent hover:text-chai-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chai-accent"
               >
                 {isCopied ? (
                   <>
@@ -201,7 +201,7 @@ export function PayZone({
                 <button
                   type="button"
                   onClick={handleSaveQr}
-                  className="chai-interactive-hover inline-flex h-9 min-h-[36px] max-h-[40px] flex-1 items-center justify-center gap-1.5 rounded-full border border-chai-line px-2 text-[12px] font-semibold text-chai-ink transition-colors hover:border-chai-accent hover:text-chai-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chai-accent"
+                  className="chai-interactive-hover inline-flex h-9 min-h-[36px] max-h-[36px] flex-1 items-center justify-center gap-1.5 rounded-full border border-chai-line px-2 text-[12px] font-semibold text-chai-ink transition-colors hover:border-chai-accent hover:text-chai-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chai-accent"
                 >
                   <Download aria-hidden="true" className="h-3.5 w-3.5" />
                   <span>{strings.qrDownload}</span>
@@ -211,15 +211,20 @@ export function PayZone({
               <button
                 type="button"
                 onClick={onPaidClick}
-                className="chai-interactive-hover inline-flex h-9 min-h-[36px] max-h-[40px] flex-1 items-center justify-center rounded-full border border-chai-line/80 bg-transparent px-2 text-[12px] font-medium text-chai-muted transition-colors hover:border-chai-accent hover:text-chai-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chai-accent"
+                className="chai-interactive-hover inline-flex h-9 min-h-[36px] max-h-[36px] flex-1 items-center justify-center rounded-full border border-chai-line/80 bg-transparent px-2 text-[12px] font-medium text-chai-muted transition-colors hover:border-chai-accent hover:text-chai-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chai-accent"
               >
                 I&apos;ve paid
               </button>
             </div>
 
-            {/* One line "Scan with any UPI app" note at 12px */}
-            <p className="mt-2 text-center text-[12px] leading-snug text-chai-muted">
+            {/* One scan line at 12px */}
+            <p className="mt-1 text-center text-[12px] leading-tight text-chai-muted">
               {strings.qrCaption}
+            </p>
+
+            {/* Moved "This page can't confirm payments" note into QR block footer, one line at 12px */}
+            <p className="mt-0.5 text-balance text-center text-[12px] leading-tight text-chai-muted">
+              {strings.noConfirmationNote}
             </p>
           </div>
         </div>

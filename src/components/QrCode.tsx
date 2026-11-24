@@ -31,10 +31,10 @@ export function QrCode({
 
   const isCompact = size === 'compact';
   const boxClass = isCompact
-    ? 'relative h-[140px] w-[140px] overflow-hidden rounded-[14px] bg-white p-2 shadow-[0_1px_2px_rgb(43_29_20/0.08),0_8px_24px_rgb(43_29_20/0.08)] ring-1 ring-chai-line'
+    ? 'relative h-[126px] w-[126px] overflow-hidden rounded-[12px] bg-white p-1.5 shadow-[0_1px_2px_rgb(43_29_20/0.08),0_8px_24px_rgb(43_29_20/0.08)] ring-1 ring-chai-line'
     : 'relative h-[180px] w-[180px] overflow-hidden rounded-[16px] bg-white p-2.5 shadow-[0_1px_2px_rgb(43_29_20/0.08),0_8px_24px_rgb(43_29_20/0.08)] ring-1 ring-chai-line';
 
-  const imgClass = isCompact ? 'h-[124px] w-[124px]' : 'h-[160px] w-[160px]';
+  const imgClass = isCompact ? 'h-[114px] w-[114px]' : 'h-[160px] w-[160px]';
 
   return (
     <figure className="flex flex-col items-center gap-1.5">
@@ -44,14 +44,14 @@ export function QrCode({
             src={prevUrl}
             alt=""
             aria-hidden="true"
-            className={`chai-qr-fade-out pointer-events-none absolute inset-2 ${imgClass}`}
+            className={`chai-qr-fade-out pointer-events-none absolute inset-1.5 ${imgClass}`}
           />
         )}
         <img
           key={currentUrl}
           src={currentUrl}
           alt={alt}
-          className={`chai-qr-fade-in absolute inset-2 ${imgClass}`}
+          className={`chai-qr-fade-in absolute inset-1.5 ${imgClass}`}
         />
       </div>
 

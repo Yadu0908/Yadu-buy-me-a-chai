@@ -46,7 +46,7 @@ export default function App(): JSX.Element {
       <Masthead />
 
       <main className="flex-1">
-        <div className="mx-auto w-full max-w-[1040px] px-4 py-4 sm:py-6 lg:max-w-[1100px]">
+        <div className="mx-auto w-full max-w-[1040px] px-4 pt-4 pb-6 sm:pt-6 sm:pb-8 lg:max-w-[1100px]">
           <ReferralNote />
           <PaymentCard config={config} about={aboutNode} works={worksNode} />
         </div>
