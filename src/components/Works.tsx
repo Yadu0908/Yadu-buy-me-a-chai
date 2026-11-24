@@ -36,12 +36,15 @@ export function Works({ works }: WorksProps): JSX.Element | null {
 
       <ul className="flex flex-col gap-3 mt-1 pt-3 border-t border-chai-line">
         {works.map((work) => (
-          <li key={work.url} className="flex gap-3.5 p-3 bg-chai-surface rounded-lg shadow">
+          <li
+            key={work.url}
+            className="flex gap-3.5 p-3.5 bg-chai-surface rounded-[20px] border border-chai-line shadow-xs"
+          >
             {work.image !== undefined && (
               <img
                 alt=""
                 src={resolveAsset(work.image)}
-                className="h-14 w-14 shrink-0 rounded-xl object-cover"
+                className="h-14 w-14 shrink-0 rounded-[14px] object-cover"
               />
             )}
             {/* min-w-0 lets a long unbroken word wrap instead of stretching the row. */}

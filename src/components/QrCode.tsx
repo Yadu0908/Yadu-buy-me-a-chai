@@ -1,44 +1,52 @@
 import type { JSX } from 'react';
+import { useEffect, useState } from 'react';
 import { strings } from '../strings.ts';
 
-/**
- * The live UPI QR (P0.5) — the pay zone's hero on every device.
- *
- * Presentational by design: it receives an already-rendered SVG data URI and never
- * encodes anything itself, so every QR the page shows is derived from one matrix.
- * The Save-QR action is not here — it sits in `PayZone`'s action row beside Copy
- * UPI ID (ADR-046), which owns the PNG encode and the analytics.
- *
- * An `<img>` rather than inline SVG so the symbol carries a real `alt` — the VPA
- * and amount in text, which is both the accessibility requirement (DESIGN.md) and
- * the fallback for a donor whose images fail to load.
- */
 export interface QrCodeProps {
   readonly svgDataUrl: string;
   readonly alt: string;
+  readonly showCaption?: boolean;
 }
 
-export function QrCode({ svgDataUrl, alt }: QrCodeProps): JSX.Element {
+export function QrCode({ svgDataUrl, alt, showCaption = true }: QrCodeProps): JSX.Element {
+  const [currentUrl, setCurrentUrl] = useState(svgDataUrl);
+  const [prevUrl, setPrevUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (svgDataUrl !== currentUrl) {
+      setPrevUrl(currentUrl);
+      setCurrentUrl(svgDataUrl);
+      const timer = setTimeout(() => {
+        setPrevUrl(null);
+      }, 160);
+      return () => clearTimeout(timer);
+    }
+  }, [svgDataUrl, currentUrl]);
+
   return (
-    <figure className="flex flex-col items-center gap-3">
-      {/*
-       * The plate stays white in dark mode. A QR is read by luminance contrast,
-       * and inverting it is the single most common way to make one unscannable.
-       */}
-      <div className="rounded-2xl bg-white p-3 shadow-[0_1px_2px_rgb(43_29_20/0.08),0_8px_24px_rgb(43_29_20/0.08)] ring-1 ring-chai-line">
+    <figure className="flex flex-col items-center gap-1.5">
+      <div className="relative h-[180px] w-[180px] overflow-hidden rounded-[16px] bg-white p-2.5 shadow-[0_1px_2px_rgb(43_29_20/0.08),0_8px_24px_rgb(43_29_20/0.08)] ring-1 ring-chai-line">
+        {prevUrl !== null && (
+          <img
+            src={prevUrl}
+            alt=""
+            aria-hidden="true"
+            className="chai-qr-fade-out pointer-events-none absolute inset-2.5 h-[160px] w-[160px]"
+          />
+        )}
         <img
-          // Re-keying on the URI remounts the image, which replays the crossfade
-          // each time the amount or message changes (DESIGN.md §Motion).
-          key={svgDataUrl}
-          src={svgDataUrl}
+          key={currentUrl}
+          src={currentUrl}
           alt={alt}
-          className="chai-fade-in h-56 w-56 sm:h-60 sm:w-60"
+          className="chai-qr-fade-in absolute inset-2.5 h-[160px] w-[160px]"
         />
       </div>
 
-      <figcaption className="text-center text-[13px] leading-snug text-chai-muted">
-        {strings.qrCaption}
-      </figcaption>
+      {showCaption && (
+        <figcaption className="text-center text-[12px] leading-snug text-chai-muted">
+          {strings.qrCaption}
+        </figcaption>
+      )}
     </figure>
   );
 }

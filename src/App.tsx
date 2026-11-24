@@ -10,23 +10,6 @@ import { Works } from './components/Works.tsx';
 import { config } from './config/config.ts';
 import { strings } from './strings.ts';
 
-/**
- * The page (P0.2, P0.10).
- *
- * A locked-brand masthead, a two-shape body, and the project's footer. The body is
- * one grid (`.chai-grid`, index.css): on mobile a single column in reading order —
- * profile → payment → projects; on desktop the profile and projects fill a left
- * column while the payment ticket takes its own right column and stays pinned
- * (always-visible) as the left scrolls (DESIGN.md §anatomy, ADR-024).
- *
- * Landmarks: `Masthead` is the banner, `Footer` the contentinfo, the three body
- * sections sit in `<main>`. A skip link jumps keyboard and screen-reader users
- * straight to the payment card — the page's one job (DESIGN.md §1) — past the
- * identity and projects. The creator's name is the page's single `<h1>` (in the
- * profile); the masthead wordmark is a logotype, not a heading.
- *
- * Default export is permitted here — CLAUDE.md allows it for route components.
- */
 export default function App(): JSX.Element {
   const { creator, works } = config;
   const hasBio = creator.bio !== undefined && creator.bio.trim().length > 0;
@@ -45,31 +28,38 @@ export default function App(): JSX.Element {
       <Masthead />
 
       <main className="flex-1">
-        <div className="mx-auto w-full max-w-[480px] px-4 py-8 lg:max-w-[1040px] lg:py-12">
+        <div className="mx-auto w-full max-w-[1100px] px-4 py-6 sm:py-8">
           <ReferralNote />
-          <div className="chai-grid">
+          <div className="flex flex-col gap-6 sm:gap-8">
+            {/* Top: the about block (avatar, name, tagline, bio, "Things I make"), compact */}
             <div
-              className="chai-area-profile chai-rise flex flex-col gap-6"
+              className="chai-rise flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between lg:gap-8"
+              style={{ animationDelay: '0ms' }}
+            >
+              <div className="flex-1 space-y-3">
+                <Profile creator={creator} />
+                {hasBio && creator.bio !== undefined && (
+                  <div className="max-w-[560px]">
+                    <Bio bio={creator.bio} />
+                  </div>
+                )}
+              </div>
+              {works.length > 0 && (
+                <div className="w-full lg:max-w-[420px] lg:shrink-0">
+                  <Works works={works} />
+                </div>
+              )}
+            </div>
+
+            {/* Below it: one full-width payment card laid out horizontally */}
+            <div
+              id="chai-pay"
+              tabIndex={-1}
+              className="chai-rise scroll-mt-4 outline-none"
               style={{ animationDelay: '60ms' }}
             >
-              <Profile creator={creator} />
-              {hasBio && creator.bio !== undefined && <Bio bio={creator.bio} />}
+              <PaymentCard config={config} />
             </div>
-
-            {/* Skip-link target. `tabIndex={-1}` lets focus land here without adding a
-                tab stop; `scroll-mt` keeps it off the top edge. On desktop the inner
-                wrapper is what stays pinned, so the QR is always in view. */}
-            <div id="chai-pay" tabIndex={-1} className="chai-area-payment scroll-mt-4 outline-none">
-              <div className="chai-rise lg:sticky lg:top-6" style={{ animationDelay: '140ms' }}>
-                <PaymentCard config={config} />
-              </div>
-            </div>
-
-            {works.length > 0 && (
-              <div className="chai-area-works chai-rise" style={{ animationDelay: '220ms' }}>
-                <Works works={works} />
-              </div>
-            )}
           </div>
         </div>
       </main>

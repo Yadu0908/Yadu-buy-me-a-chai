@@ -1,72 +1,64 @@
-import { Coffee, Globe } from 'lucide-react';
+import { Coffee } from 'lucide-react';
 import type { JSX } from 'react';
+import { useEffect, useState } from 'react';
 import { config } from '../config/config.ts';
-import { withReferral } from '../lib/referral.ts';
-import { resolveSocial } from '../lib/social.ts';
 import { strings } from '../strings.ts';
 
-const { project } = config.branding;
-
-/**
- * The masthead (ADR-026): the project's locked brand bar, identical on every fork.
- *
- * It is the page's banner landmark, and it frames the creator's content as "made
- * with buy me a chai". Deliberately *not* an <h1> — the creator's name downstream is
- * the page's single heading, so this wordmark is plain text (a logotype).
- *
- * The right side carries one CTA — "Create your support page" — pointing at GitHub's
- * use-this-template flow rather than the bare repo: a visitor who likes this page is
- * one click from having their own. It is referral-tagged, so it doubles as the signal
- * that measures clone-driven traffic (ADR-027). The maker's support link lives only in
- * the footer, so the masthead stays a clean brand bar. The inner width tracks the page
- * shell so the wordmark lines up with the profile column.
- */
-
-/** The repo's brand glyph (GitHub, GitLab, …), or a globe if the host is unmapped. */
-const repoGlyph = (): JSX.Element => {
-  const resolved = resolveSocial(project.repoUrl);
-  if (resolved.kind === 'brand' && resolved.brand !== null) {
-    return (
-      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className="h-[18px] w-[18px]">
-        <path d={resolved.brand.path} />
-      </svg>
-    );
-  }
-  return <Globe aria-hidden="true" className="h-[18px] w-[18px]" />;
-};
-
 export function Masthead(): JSX.Element {
+  const { creator } = config;
+  const hasPortfolio = Boolean(creator.portfolioUrl && creator.portfolioUrl.trim().length > 0);
+
+  const [isTabHidden, setIsTabHidden] = useState(false);
+  useEffect(() => {
+    const onVisibilityChange = () => {
+      setIsTabHidden(document.hidden);
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', onVisibilityChange);
+  }, []);
+
   return (
     <header className="border-b border-chai-line">
-      {/* Two variants of one CTA. "Create your support page" is a full phrase that
-          cannot share a narrow row with the wordmark, so below `lg` it collapses to
-          the bare glyph. Exactly one is ever displayed, so only one reaches the
-          accessibility tree — the other is `display:none`. */}
-      <div className="mx-auto flex w-full max-w-[480px] gap-3 px-4 py-3 items-center justify-between lg:max-w-[1040px]">
+      <div className="mx-auto flex w-full max-w-[480px] items-center justify-between gap-3 px-4 py-3 lg:max-w-[1040px]">
         <span className="inline-flex items-center gap-2 text-[15px] font-semibold tracking-[-0.01em] text-chai-ink">
-          <Coffee aria-hidden="true" className="h-[18px] w-[18px] text-chai-accent" />
+          <span className="relative inline-flex items-center">
+            <svg
+              viewBox="0 0 20 10"
+              className={`chai-steam pointer-events-none absolute -top-2.5 left-1/2 h-2.5 w-5 -translate-x-1/2 ${
+                isTabHidden ? 'chai-steam-paused' : ''
+              }`}
+              aria-hidden="true"
+            >
+              <path
+                d="M6 9 C 5 6, 7 4, 6 1"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.2"
+                strokeLinecap="round"
+                className="chai-steam-line-1 text-chai-accent"
+              />
+              <path
+                d="M12 9 C 11 6, 13 4, 12 1"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.2"
+                strokeLinecap="round"
+                className="chai-steam-line-2 text-chai-accent"
+              />
+            </svg>
+            <Coffee aria-hidden="true" className="h-[18px] w-[18px] text-chai-accent" />
+          </span>
           {strings.brandName}
         </span>
 
-        <a
-          href={withReferral(project.templateUrl, 'masthead', project.name)}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label={strings.externalLink(strings.createYourPage)}
-          className="hidden lg:inline-flex h-10 items-center gap-2 rounded-full border border-chai-line px-4 text-[14px] font-semibold text-chai-ink transition-colors hover:border-chai-accent hover:text-chai-accent-strong"
-        >
-          {repoGlyph()}
-          {strings.createYourPage}
-        </a>
-        <a
-          href={withReferral(project.templateUrl, 'masthead', project.name)}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label={strings.externalLink(strings.createYourPage)}
-          className="inline-flex lg:hidden h-10 items-center px-4 text-chai-ink transition-colors hover:border-chai-accent hover:text-chai-accent-strong"
-        >
-          {repoGlyph()}
-        </a>
+        {hasPortfolio && (
+          <a
+            href={creator.portfolioUrl}
+            className="inline-flex min-h-[44px] items-center text-[13px] font-medium text-chai-muted transition-colors hover:text-chai-ink"
+          >
+            Back to portfolio
+          </a>
+        )}
       </div>
     </header>
   );

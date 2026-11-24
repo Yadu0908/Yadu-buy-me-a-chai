@@ -22,6 +22,7 @@ creator:
   bio: >-
     I'm a frontend developer who contributes to open source, and I make music
     as a hobby. If something here helped you, a chai is a lovely way to say thanks.
+  portfolioUrl: ""
   socials:
     - label: GitHub
       url: https://github.com/Yadu0908

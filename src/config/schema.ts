@@ -296,6 +296,29 @@ const creatorSchema = z.strictObject({
       'A short bio. Supports **bold**, _italics_ and [links](https://…). Up to 500 characters.',
     )
     .optional(),
+  portfolioUrl: z
+    .string()
+    .transform((v) => v.trim())
+    .superRefine((v, ctx) => {
+      if (v === '') return;
+      let parsed: URL;
+      try {
+        parsed = new URL(v);
+      } catch {
+        issue(ctx, `Not a valid URL: "${v}". Include https:// at the start.`);
+        return;
+      }
+      if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') {
+        issue(ctx, `Must be an http(s) URL, got "${parsed.protocol}//…".`);
+      }
+    })
+    .describe('Link to your portfolio website or main page.')
+    .optional(),
+  chaiGif: z
+    .string()
+    .transform((v) => v.trim())
+    .optional()
+    .describe('URL or path to an animated chai GIF.'),
   // Defaults to [] rather than undefined so Profile.tsx needs no branch.
   socials: z
     .array(socialSchema)

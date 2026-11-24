@@ -4,6 +4,7 @@ import type { ChaiCreator } from '../config/schema.ts';
 import { resolveAsset } from '../lib/asset.ts';
 import { resolveSocial } from '../lib/social.ts';
 import { strings } from '../strings.ts';
+import { AnimatedChai } from './AnimatedChai.tsx';
 
 /**
  * Creator identity block (P0.2): avatar, name, tagline, social links.
@@ -67,9 +68,12 @@ export function Profile({ creator }: ProfileProps): JSX.Element {
           />
         )}
         <div className="min-w-0">
-          <h1 className="text-balance text-[26px] font-bold leading-tight tracking-[-0.02em]">
-            {name}
-          </h1>
+          <div className="flex items-center gap-2.5">
+            <AnimatedChai className="h-8 w-8 shrink-0 text-chai-accent" />
+            <h1 className="text-balance font-display text-[28px] font-bold leading-tight tracking-[-0.02em] text-chai-ink">
+              {name}
+            </h1>
+          </div>
           {tagline !== undefined && (
             <p className="mt-0.5 text-[14px] leading-snug text-chai-muted">{tagline}</p>
           )}

@@ -3,10 +3,8 @@ import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import App from './App.tsx';
 import { track } from './analytics/index.ts';
-import { config } from './config/config.ts';
-import { strings } from './strings.ts';
 
-const { maker, project } = config.branding;
+import { strings } from './strings.ts';
 
 /**
  * Page-assembly smoke test (P0.2, P0.10): the example config drives a page with the
@@ -30,17 +28,9 @@ describe('App', () => {
     expect(screen.getByRole('main')).toBeInTheDocument();
     expect(screen.getByRole('contentinfo')).toBeInTheDocument();
 
-    // The payment card is present; the repo is credited in the footer (and linked
-    // as the masthead CTA), and the maker support link lives in the footer only.
+    // The payment card is present; footer has creator attribution
     expect(screen.getByRole('heading', { name: strings.paymentCardTitle })).toBeInTheDocument();
-    expect(
-      screen.getByRole('link', {
-        name: strings.externalLink(strings.poweredBy(project.name)),
-      }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole('link', { name: strings.externalLink(strings.supportMaker(maker.name)) }),
-    ).toBeInTheDocument();
+    expect(screen.getByText('Made with love by Yadu')).toBeInTheDocument();
 
     // The demo banner (ADR-034) is gated on the build-time __CHAI_DEMO__ flag — a
     // literal false in every non-demo build, tests included — so it must be absent

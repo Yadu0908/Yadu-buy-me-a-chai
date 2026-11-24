@@ -25,6 +25,14 @@
           "description": "A short bio. Supports **bold**, _italics_ and [links](https://…). Up to 500 characters.",
           "type": "string"
         },
+        "portfolioUrl": {
+          "description": "Link to your portfolio website or main page.",
+          "type": "string"
+        },
+        "chaiGif": {
+          "description": "URL or path to an animated chai GIF.",
+          "type": "string"
+        },
         "socials": {
           "maxItems": 6,
           "type": "array",
