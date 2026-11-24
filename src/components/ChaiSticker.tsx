@@ -55,19 +55,19 @@ export function ChaiSticker({ size = 'desktop', className = '' }: ChaiStickerPro
   return (
     <div
       ref={containerRef}
-      className={`relative flex flex-col items-center justify-center ${className}`}
+      className={`relative flex flex-col items-center justify-center overflow-visible ${className}`}
     >
       {/* Soft warm radial glow behind sticker (opacity only, no filter) */}
       {isDesktop && (
         <div
-          className="pointer-events-none absolute inset-0 flex items-center justify-center"
+          className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-visible"
           aria-hidden="true"
         >
           <div
-            className="h-[360px] w-[360px] rounded-full"
+            className="pointer-events-none h-[340px] w-[340px] rounded-full"
             style={{
               background:
-                'radial-gradient(circle, rgba(255,190,110,0.18) 0%, rgba(255,190,110,0) 70%)',
+                'radial-gradient(circle at center, rgba(255, 190, 110, 0.18) 0%, rgba(255, 190, 110, 0.06) 45%, rgba(255, 190, 110, 0) 70%, transparent 100%)',
             }}
           />
         </div>
@@ -75,7 +75,7 @@ export function ChaiSticker({ size = 'desktop', className = '' }: ChaiStickerPro
 
       {/* Gentle float wrapper (translateY 0 to -6px, 4s ease-in-out loop) */}
       <div
-        className={`relative flex flex-col items-center ${
+        className={`relative flex flex-col items-center overflow-visible ${
           isPaused ? 'chai-sticker-float paused' : 'chai-sticker-float'
         }`}
       >
@@ -87,7 +87,13 @@ export function ChaiSticker({ size = 'desktop', className = '' }: ChaiStickerPro
           decoding="async"
           alt="Animated chai sticker"
           className="pointer-events-none select-none object-contain"
-          style={{ width: `${width}px`, height: `${height}px` }}
+          style={{
+            width: `${width}px`,
+            height: `${height}px`,
+            background: 'transparent',
+            border: 0,
+            outline: 'none',
+          }}
         />
         <a
           href="https://giphy.com/stickers/gifartist-procreate-viduladoodles-3NhxVrZrxIoPtVyJ3x"

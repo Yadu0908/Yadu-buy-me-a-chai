@@ -19,7 +19,7 @@ export function Masthead(): JSX.Element {
 
   return (
     <header className="border-b border-chai-line">
-      <div className="mx-auto flex w-full max-w-[480px] items-center justify-between gap-3 px-4 py-3 lg:max-w-[1040px]">
+      <div className="mx-auto flex w-full max-w-[1240px] items-center justify-between gap-3 px-4 py-3">
         <span className="inline-flex items-center gap-2 text-[15px] font-semibold tracking-[-0.01em] text-chai-ink">
           <span className="relative inline-flex items-center">
             <svg

@@ -94,7 +94,7 @@ export function PaymentCard({ config, about, works }: PaymentCardProps): JSX.Ele
       )}
 
       {/* ── Top-Right: Desktop Sticker Stage (Row 1, Cols 7-12) ──── */}
-      <div className="hidden h-full items-center justify-center xl:col-start-7 xl:col-span-6 xl:row-start-1 xl:flex">
+      <div className="hidden h-full items-center justify-center overflow-visible xl:col-start-7 xl:col-span-6 xl:row-start-1 xl:flex">
         <ChaiSticker size="desktop" />
       </div>
 
