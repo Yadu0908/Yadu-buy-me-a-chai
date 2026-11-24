@@ -85,183 +85,184 @@ export function PaymentCard({ config, about, works }: PaymentCardProps): JSX.Ele
 
   return (
     <div className="grid w-full grid-cols-1 items-start gap-6 lg:grid-cols-2 lg:gap-8">
-      {/* ── Right Column (Row 1): Controls Card (first in DOM so chips receive first keyboard tab) ── */}
-      <section
-        id="chai-pay"
-        tabIndex={-1}
-        aria-labelledby="chai-payment-heading"
-        className="order-3 w-full scroll-mt-4 rounded-[20px] border border-chai-line bg-chai-surface p-6 shadow-sm outline-none sm:p-7 lg:col-start-2 lg:row-start-1"
-      >
-        <div className="flex flex-col gap-5">
-          <div>
-            <p className="text-balance text-[11px] font-semibold uppercase tracking-[0.16em] text-chai-accent">
-              {strings.disclosure}
-            </p>
-            <h2
-              id="chai-payment-heading"
-              className="mt-1 font-display text-[26px] font-bold leading-tight tracking-[-0.02em] text-chai-ink sm:text-[30px]"
-            >
-              {strings.paymentCardTitle}
-            </h2>
-          </div>
-
-          {/* ── Amount Chips (P0.3) ── */}
-          <fieldset className="border-0 p-0">
-            <legend className="sr-only">{strings.amountGroupLabel}</legend>
-            <div className="relative flex items-stretch gap-2">
-              {activePresetIndex >= 0 && (
-                <div
-                  className="pointer-events-none absolute inset-y-0 rounded-[14px] ring-2 ring-chai-accent transition-transform duration-160 ease-out"
-                  style={{
-                    width: `calc((100% - ${(presets.length - 1) * 8}px) / ${presets.length})`,
-                    transform: `translateX(calc(${activePresetIndex} * (100% + 8px)))`,
-                  }}
-                  aria-hidden="true"
-                />
-              )}
-              {presets.map((preset) => {
-                const checked = selection.kind === 'preset' && selection.amount === preset.amount;
-                const isPressed = pressedAmount === preset.amount;
-                return (
-                  <label key={preset.amount} className="flex-1">
-                    <input
-                      type="radio"
-                      name="chai-amount"
-                      className="peer sr-only"
-                      value={preset.amount}
-                      checked={checked}
-                      onChange={() => selectPreset(preset.amount)}
-                      aria-label={strings.presetChipLabel(
-                        preset.label,
-                        formatRupees(preset.amount),
-                      )}
-                    />
-                    <span
-                      className={`chai-interactive-hover flex h-full min-h-[58px] cursor-pointer flex-col items-center justify-center rounded-[14px] border border-chai-line px-2 py-2 text-chai-ink transition-colors hover:border-chai-line-strong ${
-                        checked
-                          ? 'border-chai-accent bg-chai-accent-soft font-medium shadow-[0_4px_12px_-4px_rgb(120_60_20/0.25)]'
-                          : 'bg-chai-surface'
-                      } ${isPressed ? 'chip-pressed' : ''} peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-chai-accent`}
-                    >
-                      {preset.emoji !== undefined && (
-                        <span
-                          aria-hidden="true"
-                          className="text-[14px] leading-none tracking-tighter"
-                        >
-                          {preset.emoji}
-                        </span>
-                      )}
-                      <span
-                        aria-hidden="true"
-                        className="mt-0.5 flex flex-1 items-center text-balance text-center text-[11px] leading-tight text-chai-muted"
-                      >
-                        {preset.label}
-                      </span>
-                      <span
-                        aria-hidden="true"
-                        className="chai-numeral mt-0.5 text-[14px] font-bold leading-none text-chai-ink"
-                      >
-                        {strings.presetChipPrice(formatRupees(preset.amount))}
-                      </span>
-                    </span>
-                  </label>
-                );
-              })}
-            </div>
-          </fieldset>
-
-          {chai.allowCustomAmount && (
-            <div>
-              <label
-                htmlFor="chai-custom-amount"
-                className="block text-[12px] font-medium text-chai-muted"
-              >
-                {strings.customAmountLabel}
-              </label>
-              <div className="mt-1 flex min-h-[44px] items-center gap-1.5 rounded-[12px] border border-chai-line px-3 focus-within:border-chai-accent">
-                <span aria-hidden="true" className="text-[14px] font-semibold text-chai-muted">
-                  ₹
-                </span>
-                <input
-                  id="chai-custom-amount"
-                  type="text"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  autoComplete="off"
-                  placeholder={strings.customAmountPlaceholder}
-                  value={customInput}
-                  onChange={(event) => handleCustomChange(event.target.value)}
-                  className="min-h-[40px] w-full bg-transparent text-[14px] font-semibold outline-none placeholder:font-normal placeholder:text-chai-muted"
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Large amount warning */}
-          {intent?.exceedsSoftCap === true && (
-            <p className="text-[12px] text-chai-warn">{strings.largeAmountWarning}</p>
-          )}
-
-          {/* ── Message (P0.4) ── */}
-          {chai.allowDonorMessage && (
-            <div>
-              <div className="flex items-baseline justify-between gap-2">
-                <label htmlFor="chai-message" className="text-[12px] font-medium text-chai-muted">
-                  {strings.messageLabel}
-                </label>
-                <span aria-hidden="true" className="chai-numeral text-[11px] text-chai-muted">
-                  {strings.messageCounter(messageLength, MAX_NOTE_LENGTH)}
-                </span>
-              </div>
-              <input
-                id="chai-message"
-                type="text"
-                autoComplete="off"
-                aria-describedby="chai-message-hint"
-                placeholder={chai.defaultNote}
-                value={message}
-                onChange={(event) => handleMessageChange(event.target.value)}
-                className="mt-1 min-h-[44px] w-full rounded-[12px] border border-chai-line bg-transparent px-3 text-[14px] outline-none placeholder:text-chai-muted focus:border-chai-accent"
-              />
-              <p id="chai-message-hint" className="mt-1 text-[11px] text-chai-muted">
-                {strings.messageHint}
-              </p>
-              {EMOJI_RE.test(message) && (
-                <p className="mt-1 text-[11px] text-chai-warn">{strings.messageEmojiWarning}</p>
-              )}
-            </div>
-          )}
-
-          <p className="text-balance text-[11px] leading-relaxed text-chai-muted">
-            {strings.noConfirmationNote}
-          </p>
-        </div>
-      </section>
-
-      {/* ── Left Column (Row 1): About & Works ───────────────────────────── */}
-      <div className="contents lg:col-start-1 lg:row-start-1 lg:flex lg:flex-col lg:gap-5">
+      {/* ── Left Column: About, Works (Nothing below it on desktop) ─────── */}
+      <div className="contents lg:col-start-1 lg:row-start-1 lg:mt-16 lg:flex lg:flex-col lg:gap-5">
         {about && <div className="order-1">{about}</div>}
         {works && <div className="order-2">{works}</div>}
       </div>
 
-      {/* ── Left Column (Row 2): QR Block ─────────────────────────────────── */}
-      <div className="order-4 lg:col-start-1 lg:row-start-2">
-        <PayZone
-          intent={intent}
-          errors={errors}
-          qr={qr}
-          onPaidClick={() => setHasPaid(true)}
-          hasPaid={hasPaid}
-          onBackToPay={() => setHasPaid(false)}
-        />
-      </div>
+      {/* ── Right Column: Controls Card + 16px gap + QR Block ──────────── */}
+      <div className="contents lg:col-start-2 lg:row-start-1 lg:mt-16 lg:flex lg:flex-col lg:gap-4">
+        {/* Controls Card */}
+        <section
+          id="chai-pay"
+          tabIndex={-1}
+          aria-labelledby="chai-payment-heading"
+          className="relative order-3 w-full scroll-mt-4 rounded-[20px] border border-chai-line bg-chai-surface p-6 shadow-sm outline-none sm:p-7"
+        >
+          {/* Desktop Sticker: Top right corner, rising above card's top edge */}
+          <ChaiSticker
+            size="desktop"
+            className="pointer-events-none absolute -top-[56px] right-4 z-10 hidden lg:flex"
+          />
 
-      {/* ── Right Column (Row 2): Desktop Sticker in empty space below Controls Card ── */}
-      <div
-        className="hidden lg:col-start-2 lg:row-start-2 lg:flex lg:justify-self-end"
-        style={{ alignSelf: 'end', justifySelf: 'end' }}
-      >
-        <ChaiSticker size="desktop" />
+          <div className="flex flex-col gap-5">
+            <div className="min-h-[72px] pr-[115px]">
+              <p className="text-balance text-[11px] font-semibold uppercase tracking-[0.16em] text-chai-accent">
+                {strings.disclosure}
+              </p>
+              <h2
+                id="chai-payment-heading"
+                className="mt-1 font-display text-[26px] font-bold leading-tight tracking-[-0.02em] text-chai-ink sm:text-[30px]"
+              >
+                {strings.paymentCardTitle}
+              </h2>
+            </div>
+
+            {/* ── Amount Chips (P0.3) ── */}
+            <fieldset className="border-0 p-0">
+              <legend className="sr-only">{strings.amountGroupLabel}</legend>
+              <div className="relative flex items-stretch gap-2">
+                {activePresetIndex >= 0 && (
+                  <div
+                    className="pointer-events-none absolute inset-y-0 rounded-[14px] ring-2 ring-chai-accent transition-transform duration-160 ease-out"
+                    style={{
+                      width: `calc((100% - ${(presets.length - 1) * 8}px) / ${presets.length})`,
+                      transform: `translateX(calc(${activePresetIndex} * (100% + 8px)))`,
+                    }}
+                    aria-hidden="true"
+                  />
+                )}
+                {presets.map((preset) => {
+                  const checked = selection.kind === 'preset' && selection.amount === preset.amount;
+                  const isPressed = pressedAmount === preset.amount;
+                  return (
+                    <label key={preset.amount} className="flex-1">
+                      <input
+                        type="radio"
+                        name="chai-amount"
+                        className="peer sr-only"
+                        value={preset.amount}
+                        checked={checked}
+                        onChange={() => selectPreset(preset.amount)}
+                        aria-label={strings.presetChipLabel(
+                          preset.label,
+                          formatRupees(preset.amount),
+                        )}
+                      />
+                      <span
+                        className={`chai-interactive-hover flex h-full min-h-[58px] cursor-pointer flex-col items-center justify-center rounded-[14px] border border-chai-line px-2 py-2 text-chai-ink transition-colors hover:border-chai-line-strong ${
+                          checked
+                            ? 'border-chai-accent bg-chai-accent-soft font-medium shadow-[0_4px_12px_-4px_rgb(120_60_20/0.25)]'
+                            : 'bg-chai-surface'
+                        } ${isPressed ? 'chip-pressed' : ''} peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-chai-accent`}
+                      >
+                        {preset.emoji !== undefined && (
+                          <span
+                            aria-hidden="true"
+                            className="text-[14px] leading-none tracking-tighter"
+                          >
+                            {preset.emoji}
+                          </span>
+                        )}
+                        <span
+                          aria-hidden="true"
+                          className="mt-0.5 flex flex-1 items-center text-balance text-center text-[11px] leading-tight text-chai-muted"
+                        >
+                          {preset.label}
+                        </span>
+                        <span
+                          aria-hidden="true"
+                          className="chai-numeral mt-0.5 text-[14px] font-bold leading-none text-chai-ink"
+                        >
+                          {strings.presetChipPrice(formatRupees(preset.amount))}
+                        </span>
+                      </span>
+                    </label>
+                  );
+                })}
+              </div>
+            </fieldset>
+
+            {chai.allowCustomAmount && (
+              <div>
+                <label
+                  htmlFor="chai-custom-amount"
+                  className="block text-[12px] font-medium text-chai-muted"
+                >
+                  {strings.customAmountLabel}
+                </label>
+                <div className="mt-1 flex min-h-[44px] items-center gap-1.5 rounded-[12px] border border-chai-line px-3 focus-within:border-chai-accent">
+                  <span aria-hidden="true" className="text-[14px] font-semibold text-chai-muted">
+                    ₹
+                  </span>
+                  <input
+                    id="chai-custom-amount"
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    autoComplete="off"
+                    placeholder={strings.customAmountPlaceholder}
+                    value={customInput}
+                    onChange={(event) => handleCustomChange(event.target.value)}
+                    className="min-h-[40px] w-full bg-transparent text-[14px] font-semibold outline-none placeholder:font-normal placeholder:text-chai-muted"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Large amount warning */}
+            {intent?.exceedsSoftCap === true && (
+              <p className="text-[12px] text-chai-warn">{strings.largeAmountWarning}</p>
+            )}
+
+            {/* ── Message (P0.4) ── */}
+            {chai.allowDonorMessage && (
+              <div>
+                <div className="flex items-baseline justify-between gap-2">
+                  <label htmlFor="chai-message" className="text-[12px] font-medium text-chai-muted">
+                    {strings.messageLabel}
+                  </label>
+                  <span aria-hidden="true" className="chai-numeral text-[11px] text-chai-muted">
+                    {strings.messageCounter(messageLength, MAX_NOTE_LENGTH)}
+                  </span>
+                </div>
+                <input
+                  id="chai-message"
+                  type="text"
+                  autoComplete="off"
+                  aria-describedby="chai-message-hint"
+                  placeholder={chai.defaultNote}
+                  value={message}
+                  onChange={(event) => handleMessageChange(event.target.value)}
+                  className="mt-1 min-h-[44px] w-full rounded-[12px] border border-chai-line bg-transparent px-3 text-[14px] outline-none placeholder:text-chai-muted focus:border-chai-accent"
+                />
+                <p id="chai-message-hint" className="mt-1 text-[11px] text-chai-muted">
+                  {strings.messageHint}
+                </p>
+                {EMOJI_RE.test(message) && (
+                  <p className="mt-1 text-[11px] text-chai-warn">{strings.messageEmojiWarning}</p>
+                )}
+              </div>
+            )}
+
+            <p className="text-balance text-[11px] leading-relaxed text-chai-muted">
+              {strings.noConfirmationNote}
+            </p>
+          </div>
+        </section>
+
+        {/* Compact QR Block directly below controls card with 16px gap */}
+        <div className="order-4 w-full">
+          <PayZone
+            intent={intent}
+            errors={errors}
+            qr={qr}
+            onPaidClick={() => setHasPaid(true)}
+            hasPaid={hasPaid}
+            onBackToPay={() => setHasPaid(false)}
+          />
+        </div>
       </div>
 
       {/* ── Mobile Sticker: last in single-column order (smaller, centered) ── */}

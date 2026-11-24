@@ -33,11 +33,11 @@ export function ChaiSticker({
   }
 
   const isDesktop = size === 'desktop';
-  const width = isDesktop ? 120 : 90;
-  const height = isDesktop ? 205 : 154;
+  const width = isDesktop ? 100 : 90;
+  const height = isDesktop ? 170 : 153;
 
   return (
-    <div className={`flex flex-col items-center ${className}`}>
+    <div className={`flex flex-col ${isDesktop ? 'items-end' : 'items-center'} ${className}`}>
       <div
         style={{ width: `${width}px`, height: `${height}px` }}
         className="relative overflow-visible"
@@ -57,7 +57,8 @@ export function ChaiSticker({
         href="https://giphy.com/stickers/gifartist-procreate-viduladoodles-3NhxVrZrxIoPtVyJ3x"
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-1 text-[11px] text-chai-muted underline underline-offset-2 transition-colors hover:text-chai-ink"
+        tabIndex={-1}
+        className="pointer-events-auto mt-0.5 text-[10px] leading-none text-chai-muted underline underline-offset-2 transition-colors hover:text-chai-ink"
       >
         via GIPHY
       </a>
