@@ -12,29 +12,29 @@
 #     Copy-paste the ID from your UPI app; do not type it.
 
 creator:
-  name: Your Name
+  name: "Yadwandra Thuwal"
   # ⚠️  YOUR UPI ID GOES HERE. Open your UPI app → profile → "UPI ID".
-  vpa: yourname@bank
-  tagline: Building open-source tools ☕
+  vpa: "7895712280@axl"
+  tagline: "Frontend Developer. OSS contributor. ☕"
   # Drop a square image at public/avatar.png and uncomment, or delete this line for
   # an initials avatar.
-  # avatar: /avatar.png
+  avatar: /avatar.png
   bio: >-
-    I build **open-source** things and write about them. If something here saved you
-    an afternoon, a chai is a lovely way to say thanks.
+    I'm a frontend developer who contributes to open source, and I make music
+    as a hobby. If something here helped you, a chai is a lovely way to say thanks.
   socials:
     - label: GitHub
-      url: https://github.com/your-handle
+      url: https://github.com/Yadu0908
 
 # Your projects. Replace with your own, or delete the list to hide the section.
 works:
-  - title: My side project
+  - title: Creative Developer Portfolio
     # Up to 300 characters, and your line breaks are kept — `>-` flows one
     # paragraph, `|-` keeps the breaks exactly as you type them.
     description: >-
-      A thing I built and wrote about. There is room for a couple of sentences
-      here, so say what it actually does and who it is for.
-    url: https://github.com/your-handle/my-project
+      My personal portfolio with a 3D desk scene, a career journey map and
+      interactive project cards. Built with Next.js, React Three Fiber and Motion.
+    url: https://yaduportfolio-chi.vercel.app/
 
 chai:
   # The one-tap chips: up to 4 named tiers, each with its own rupee amount. Name them
@@ -43,14 +43,14 @@ chai:
   # `emoji` is optional decoration (up to 3 glyphs); delete it for a text-only chip.
   presets:
     - label: Cutting chai
-      amount: 20
+      amount: 10
       emoji: ☕
     - label: Chai for me and you
-      amount: 50
+      amount: 30
       emoji: ☕☕
-    - label: 2 chai + chips
+    - label: 2 chai + biscuit
       amount: 100
-      emoji: ☕☕🍟
+      emoji: ☕☕🥮
   allowCustomAmount: true
   maxAmountWarning: 100000
   # Attached to the payment when a donor leaves the message field empty.
@@ -62,7 +62,7 @@ theme:
   mode: auto
   # The one palette knob (hex / rgb() / oklch()). Recolours the CTA, borders, focus
   # rings and accent text — never the off-white canvas, which is brand-locked.
-  accent: '#C4622D'
+  accent: "#C4622D"
 
 meta:
   # Both default to your name: the tab title becomes `Buy {creator.name} a chai`,
