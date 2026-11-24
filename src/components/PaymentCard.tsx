@@ -85,15 +85,15 @@ export function PaymentCard({ config, about, works }: PaymentCardProps): JSX.Ele
 
   return (
     <div className="grid w-full grid-cols-1 items-start gap-6 lg:grid-cols-2 lg:gap-8">
-      {/* ── Right Column: Controls Card (first in DOM so chips receive first keyboard tab) ── */}
+      {/* ── Right Column (Row 1): Controls Card (first in DOM so chips receive first keyboard tab) ── */}
       <section
         id="chai-pay"
         tabIndex={-1}
         aria-labelledby="chai-payment-heading"
-        className="relative order-3 w-full scroll-mt-4 rounded-[20px] border border-chai-line bg-chai-surface p-6 shadow-sm outline-none sm:p-7 lg:col-start-2 lg:row-start-1"
+        className="order-3 w-full scroll-mt-4 rounded-[20px] border border-chai-line bg-chai-surface p-6 shadow-sm outline-none sm:p-7 lg:col-start-2 lg:row-start-1"
       >
         <div className="flex flex-col gap-5">
-          <div className="max-w-[calc(100%-130px)]">
+          <div>
             <p className="text-balance text-[11px] font-semibold uppercase tracking-[0.16em] text-chai-accent">
               {strings.disclosure}
             </p>
@@ -236,31 +236,35 @@ export function PaymentCard({ config, about, works }: PaymentCardProps): JSX.Ele
             {strings.noConfirmationNote}
           </p>
         </div>
-
-        {/* Desktop Sticker: placed at top right corner, overlaps card top edge by ~40px */}
-        <ChaiSticker
-          size="desktop"
-          className="pointer-events-none absolute -top-10 right-4 z-10 hidden lg:flex"
-        />
       </section>
 
-      {/* ── Left Column: About, Works, QR Block ──────────────────────────── */}
+      {/* ── Left Column (Row 1): About & Works ───────────────────────────── */}
       <div className="contents lg:col-start-1 lg:row-start-1 lg:flex lg:flex-col lg:gap-5">
         {about && <div className="order-1">{about}</div>}
         {works && <div className="order-2">{works}</div>}
-        <div className="order-4">
-          <PayZone
-            intent={intent}
-            errors={errors}
-            qr={qr}
-            onPaidClick={() => setHasPaid(true)}
-            hasPaid={hasPaid}
-            onBackToPay={() => setHasPaid(false)}
-          />
-        </div>
       </div>
 
-      {/* ── Mobile Sticker: last in single-column order (smaller) ──────────── */}
+      {/* ── Left Column (Row 2): QR Block ─────────────────────────────────── */}
+      <div className="order-4 lg:col-start-1 lg:row-start-2">
+        <PayZone
+          intent={intent}
+          errors={errors}
+          qr={qr}
+          onPaidClick={() => setHasPaid(true)}
+          hasPaid={hasPaid}
+          onBackToPay={() => setHasPaid(false)}
+        />
+      </div>
+
+      {/* ── Right Column (Row 2): Desktop Sticker in empty space below Controls Card ── */}
+      <div
+        className="hidden lg:col-start-2 lg:row-start-2 lg:flex lg:justify-self-end"
+        style={{ alignSelf: 'end', justifySelf: 'end' }}
+      >
+        <ChaiSticker size="desktop" />
+      </div>
+
+      {/* ── Mobile Sticker: last in single-column order (smaller, centered) ── */}
       <div className="order-5 flex w-full justify-center py-2 lg:hidden">
         <ChaiSticker size="mobile" />
       </div>
