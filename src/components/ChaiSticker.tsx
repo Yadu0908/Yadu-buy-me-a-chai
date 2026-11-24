@@ -1,21 +1,22 @@
 import type { JSX } from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export interface ChaiStickerProps {
   readonly size?: 'desktop' | 'mobile';
   readonly className?: string;
 }
 
-export function ChaiSticker({
-  size = 'desktop',
-  className = '',
-}: ChaiStickerProps): JSX.Element | null {
+export function ChaiSticker({ size = 'desktop', className = '' }: ChaiStickerProps): JSX.Element {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(() => {
     if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
       return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     }
     return false;
   });
+
+  const [isTabHidden, setIsTabHidden] = useState(false);
+  const [isIntersecting, setIsIntersecting] = useState(true);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
@@ -28,19 +29,55 @@ export function ChaiSticker({
     return () => mediaQuery.removeEventListener('change', handler);
   }, []);
 
-  if (prefersReducedMotion) {
-    return null;
-  }
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    const handleVisChange = () => setIsTabHidden(document.hidden);
+    document.addEventListener('visibilitychange', handleVisChange);
+    return () => document.removeEventListener('visibilitychange', handleVisChange);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof IntersectionObserver === 'undefined') return;
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry) setIsIntersecting(entry.isIntersecting);
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   const isDesktop = size === 'desktop';
-  const width = isDesktop ? 65 : 90;
-  const height = isDesktop ? 110 : 153;
+  const width = isDesktop ? 206 : 120;
+  const height = isDesktop ? 350 : 204;
+  const isPaused = isTabHidden || !isIntersecting || prefersReducedMotion;
 
   return (
-    <div className={`flex flex-col ${isDesktop ? 'items-end' : 'items-center'} ${className}`}>
+    <div
+      ref={containerRef}
+      className={`relative flex flex-col items-center justify-center ${className}`}
+    >
+      {/* Soft warm radial glow behind sticker (opacity only, no filter) */}
+      {isDesktop && (
+        <div
+          className="pointer-events-none absolute inset-0 flex items-center justify-center"
+          aria-hidden="true"
+        >
+          <div
+            className="h-[360px] w-[360px] rounded-full"
+            style={{
+              background:
+                'radial-gradient(circle, rgba(255,190,110,0.18) 0%, rgba(255,190,110,0) 70%)',
+            }}
+          />
+        </div>
+      )}
+
+      {/* Gentle float wrapper (translateY 0 to -6px, 4s ease-in-out loop) */}
       <div
-        style={{ width: `${width}px`, height: `${height}px` }}
-        className="relative overflow-visible"
+        className={`relative flex flex-col items-center ${
+          isPaused ? 'chai-sticker-float paused' : 'chai-sticker-float'
+        }`}
       >
         <img
           src="https://media.giphy.com/media/3NhxVrZrxIoPtVyJ3x/giphy.webp"
@@ -52,16 +89,16 @@ export function ChaiSticker({
           className="pointer-events-none select-none object-contain"
           style={{ width: `${width}px`, height: `${height}px` }}
         />
+        <a
+          href="https://giphy.com/stickers/gifartist-procreate-viduladoodles-3NhxVrZrxIoPtVyJ3x"
+          target="_blank"
+          rel="noopener noreferrer"
+          tabIndex={-1}
+          className="pointer-events-auto mt-2 text-[10px] leading-none text-chai-muted underline underline-offset-2 transition-colors hover:text-chai-ink"
+        >
+          via GIPHY
+        </a>
       </div>
-      <a
-        href="https://giphy.com/stickers/gifartist-procreate-viduladoodles-3NhxVrZrxIoPtVyJ3x"
-        target="_blank"
-        rel="noopener noreferrer"
-        tabIndex={-1}
-        className="pointer-events-auto mt-0.5 text-[10px] leading-none text-chai-muted underline underline-offset-2 transition-colors hover:text-chai-ink"
-      >
-        via GIPHY
-      </a>
     </div>
   );
 }

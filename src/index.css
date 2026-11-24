@@ -405,6 +405,25 @@
   animation: chai-toast-in 180ms ease-out;
 }
 
+/* Gentle float for sticker stage (translateY 0 to -6px, 4s ease-in-out loop) */
+@keyframes chai-sticker-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.chai-sticker-float {
+  animation: chai-sticker-float 4s ease-in-out infinite;
+}
+
+.chai-sticker-float.paused {
+  animation-play-state: paused;
+}
+
 /* Hover effects: translateY(-2px) only on fine pointers */
 @media (hover: hover) and (pointer: fine) {
   .chai-interactive-hover {
@@ -437,6 +456,7 @@
   .chai-qr-fade-out,
   .chai-amount-in,
   .chai-amount-out,
+  .chai-sticker-float,
   .chip-pressed {
     animation: none !important;
     transform: none !important;

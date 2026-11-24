@@ -71,7 +71,7 @@ export function PayZone({
   }, [intent, payableRupees, qr]);
 
   return (
-    <div className="w-full">
+    <div className="h-full w-full">
       <div aria-live="polite">
         {errors.length > 0 && (
           <ul className="mb-3 space-y-1 text-[13px] text-chai-error">
@@ -84,17 +84,19 @@ export function PayZone({
 
       {intent === null || payableRupees === null ? (
         errors.length === 0 && (
-          <p className="py-6 text-center text-[13px] text-chai-muted">{strings.amountPrompt}</p>
+          <div className="flex h-full w-full items-center justify-center rounded-[20px] border border-chai-line bg-chai-surface p-6 shadow-sm">
+            <p className="text-center text-[13px] text-chai-muted">{strings.amountPrompt}</p>
+          </div>
         )
       ) : hasPaid ? (
-        <div className="w-full rounded-[20px] border border-chai-line bg-chai-surface p-4 shadow-sm sm:p-5">
+        <div className="flex h-full w-full flex-col justify-between rounded-[20px] border border-chai-line bg-chai-surface p-6 shadow-sm">
           <ThankYouCard onBack={onBackToPay ?? (() => {})} />
         </div>
       ) : (
-        <div className="flex flex-col gap-3">
+        <div className="flex h-full flex-col gap-3">
           {/* Mobile deeplink button: on phones, sits right above the QR block */}
           {isMobile && (
-            <div className="w-full text-center lg:hidden">
+            <div className="w-full text-center xl:hidden">
               <a
                 href={intent.uri}
                 aria-describedby={warningId}
@@ -122,10 +124,10 @@ export function PayZone({
             </div>
           )}
 
-          {/* Compact card: total block height at most 220px on desktop */}
-          <div className="w-full rounded-[20px] border border-chai-line bg-chai-surface px-3 py-2 shadow-sm sm:px-3.5 sm:py-2.5">
-            {/* Top row: Amount & UPI ID on left, QR (about 130px) on right */}
-            <div className="flex items-center justify-between gap-3">
+          {/* QR block: same height as controls card */}
+          <div className="flex h-full w-full flex-col justify-between rounded-[20px] border border-chai-line bg-chai-surface p-6 shadow-sm">
+            {/* Top row: Amount & UPI ID on left, QR (about 140px) on right */}
+            <div className="flex items-center justify-between gap-4">
               {/* Left: Amount and UPI ID */}
               <div className="flex flex-col items-start justify-center">
                 <p className="sr-only">
@@ -135,10 +137,10 @@ export function PayZone({
                   <span className="text-[18px] font-semibold leading-none text-chai-accent sm:text-[20px]">
                     ₹
                   </span>
-                  <span className="relative inline-block h-[38px] overflow-hidden">
+                  <span className="relative inline-block h-[42px] overflow-hidden">
                     {prevAmount !== null && (
                       <span
-                        className="chai-amount-out absolute left-0 top-0 inline-block text-[34px] font-bold leading-none tracking-[-0.03em] sm:text-[36px]"
+                        className="chai-amount-out absolute left-0 top-0 inline-block text-[36px] font-bold leading-none tracking-[-0.03em] sm:text-[40px]"
                         aria-hidden="true"
                       >
                         {formatRupees(prevAmount)}
@@ -146,7 +148,7 @@ export function PayZone({
                     )}
                     <span
                       key={displayAmount}
-                      className={`${prevAmount !== null ? 'chai-amount-in' : ''} inline-block text-[34px] font-bold leading-none tracking-[-0.03em] sm:text-[36px]`}
+                      className={`${prevAmount !== null ? 'chai-amount-in' : ''} inline-block text-[36px] font-bold leading-none tracking-[-0.03em] sm:text-[40px]`}
                     >
                       {formatRupees(displayAmount ?? 0)}
                     </span>
@@ -159,7 +161,7 @@ export function PayZone({
                 </p>
               </div>
 
-              {/* Right: QR Code (about 130px) */}
+              {/* Right: QR Code (about 140px) */}
               <div className="shrink-0">
                 {qr !== null ? (
                   <QrCode
@@ -169,7 +171,7 @@ export function PayZone({
                     showCaption={false}
                   />
                 ) : (
-                  <div className="flex h-[126px] w-[126px] items-center justify-center rounded-[12px] bg-chai-accent-soft p-2 text-center text-[12px] text-chai-muted">
+                  <div className="flex h-[140px] w-[140px] items-center justify-center rounded-[14px] bg-chai-accent-soft p-2 text-center text-[12px] text-chai-muted">
                     {strings.qrUnavailable}
                   </div>
                 )}
@@ -177,7 +179,7 @@ export function PayZone({
             </div>
 
             {/* Buttons in one row under them: Copy UPI ID, Save QR, I've paid (36px high) */}
-            <div className="mt-2 flex w-full gap-2">
+            <div className="mt-4 flex w-full gap-2">
               <button
                 type="button"
                 onClick={handleCopy}
@@ -218,12 +220,12 @@ export function PayZone({
             </div>
 
             {/* One scan line at 12px */}
-            <p className="mt-1 text-center text-[12px] leading-tight text-chai-muted">
+            <p className="mt-2 text-center text-[12px] leading-tight text-chai-muted">
               {strings.qrCaption}
             </p>
 
-            {/* Moved "This page can't confirm payments" note into QR block footer, one line at 12px */}
-            <p className="mt-0.5 text-balance text-center text-[12px] leading-tight text-chai-muted">
+            {/* "This page can't confirm payments" line in 12px */}
+            <p className="mt-1 text-balance text-center text-[12px] leading-tight text-chai-muted">
               {strings.noConfirmationNote}
             </p>
           </div>
