@@ -42,7 +42,7 @@ export function ThankYouCard({ onBack }: ThankYouCardProps): JSX.Element {
   return (
     <div
       aria-live="polite"
-      className="relative flex min-h-[380px] w-full flex-col items-center justify-center p-8 text-center"
+      className="relative flex min-h-[220px] w-full flex-col items-center justify-center p-4 text-center sm:p-5"
     >
       {/* 24-piece lightweight CSS confetti burst */}
       {showConfetti && !prefersReducedMotion && (
@@ -65,7 +65,7 @@ export function ThankYouCard({ onBack }: ThankYouCardProps): JSX.Element {
       )}
 
       {/* Steaming cup with fast steam animation */}
-      <div className="relative mb-5 inline-flex items-center justify-center">
+      <div className="relative mb-3 inline-flex items-center justify-center">
         {!prefersReducedMotion && (
           <svg
             viewBox="0 0 20 10"
@@ -90,27 +90,27 @@ export function ThankYouCard({ onBack }: ThankYouCardProps): JSX.Element {
             />
           </svg>
         )}
-        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-chai-accent-soft text-chai-accent ring-1 ring-chai-line">
-          <Coffee className="h-8 w-8" aria-hidden="true" />
+        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-chai-accent-soft text-chai-accent ring-1 ring-chai-line">
+          <Coffee className="h-6 w-6" aria-hidden="true" />
         </div>
       </div>
 
       <h2
         ref={headingRef}
         tabIndex={-1}
-        className="font-display text-[32px] font-bold leading-tight tracking-[-0.02em] text-chai-ink outline-none sm:text-[36px]"
+        className="font-display text-[24px] font-bold leading-tight tracking-[-0.02em] text-chai-ink outline-none sm:text-[28px]"
       >
         Thanks for the chai!
       </h2>
 
-      <p className="mt-2 text-[15px] leading-relaxed text-chai-muted">
+      <p className="mt-1 text-[13px] leading-relaxed text-chai-muted">
         It really helps. Chai is on me next time.
       </p>
 
       <button
         type="button"
         onClick={onBack}
-        className="chai-interactive-hover mt-6 inline-flex min-h-[44px] items-center text-[13px] font-medium text-chai-muted underline underline-offset-2 transition-colors hover:text-chai-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chai-accent"
+        className="chai-interactive-hover mt-3.5 inline-flex min-h-[36px] items-center text-[12px] font-medium text-chai-muted underline underline-offset-2 transition-colors hover:text-chai-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chai-accent"
       >
         ← Back to payment
       </button>

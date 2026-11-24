@@ -10,8 +10,8 @@ import { copyText } from '../lib/clipboard.ts';
 import { downloadDataUrl } from '../lib/download.ts';
 import type { UpiError, UpiIntent } from '../lib/upi.ts';
 import { strings, upiErrorStrings } from '../strings.ts';
-import { GiphyChai } from './GiphyChai.tsx';
 import { QrCode } from './QrCode.tsx';
+import { ThankYouCard } from './ThankYouCard.tsx';
 import { Toast } from './Toast.tsx';
 
 export interface PayZoneProps {
@@ -19,9 +19,18 @@ export interface PayZoneProps {
   readonly errors: readonly UpiError[];
   readonly qr: UpiQr | null;
   readonly onPaidClick?: () => void;
+  readonly hasPaid?: boolean;
+  readonly onBackToPay?: () => void;
 }
 
-export function PayZone({ intent, errors, qr, onPaidClick }: PayZoneProps): JSX.Element {
+export function PayZone({
+  intent,
+  errors,
+  qr,
+  onPaidClick,
+  hasPaid = false,
+  onBackToPay,
+}: PayZoneProps): JSX.Element {
   const isMobile = useIsMobile();
   const { toast, showToast } = useToast();
   const warningId = useId();
@@ -77,53 +86,15 @@ export function PayZone({ intent, errors, qr, onPaidClick }: PayZoneProps): JSX.
         errors.length === 0 && (
           <p className="py-6 text-center text-[13px] text-chai-muted">{strings.amountPrompt}</p>
         )
+      ) : hasPaid ? (
+        <div className="w-full rounded-[20px] border border-chai-line bg-chai-surface p-4 shadow-sm sm:p-5">
+          <ThankYouCard onBack={onBackToPay ?? (() => {})} />
+        </div>
       ) : (
-        <div className="flex flex-col items-center gap-4">
-          {/* 
-            Desktop: GIF on top -> Amount & UPI -> QR -> Buttons -> "I've paid" -> Note.
-            Phones: Amount & UPI -> Deeplink button -> GIF -> QR -> Buttons -> "I've paid" -> Note.
-          */}
-
-          {/* GIF slot: desktop order 1, phone order 3 */}
-          <div className="order-3 lg:order-1">
-            <GiphyChai />
-          </div>
-
-          {/* Amount and UPI ID: phone order 1, desktop order 2 */}
-          <div className="order-1 flex flex-col items-center lg:order-2">
-            <p className="sr-only">{strings.payingTo(formatRupees(payableRupees), intent.vpa)}</p>
-            <div
-              aria-hidden="true"
-              className="chai-numeral flex items-baseline justify-center gap-1"
-            >
-              <span className="text-[22px] font-semibold leading-none text-chai-accent">₹</span>
-              <span className="relative inline-block h-[44px] overflow-hidden">
-                {prevAmount !== null && (
-                  <span
-                    className="chai-amount-out absolute left-0 top-0 inline-block text-[42px] font-bold leading-none tracking-[-0.03em]"
-                    aria-hidden="true"
-                  >
-                    {formatRupees(prevAmount)}
-                  </span>
-                )}
-                <span
-                  key={displayAmount}
-                  className={`${prevAmount !== null ? 'chai-amount-in' : ''} inline-block text-[42px] font-bold leading-none tracking-[-0.03em]`}
-                >
-                  {formatRupees(displayAmount ?? 0)}
-                </span>
-              </span>
-            </div>
-            <p aria-hidden="true" className="mt-1.5">
-              <span className="inline-block whitespace-nowrap rounded-lg bg-chai-accent-soft px-2.5 py-1 font-vpa text-[12px] text-chai-ink">
-                {intent.vpa}
-              </span>
-            </p>
-          </div>
-
-          {/* Mobile deeplink button: phone order 2, hidden on desktop */}
+        <div className="flex flex-col gap-3">
+          {/* Mobile deeplink button: on phones, sits right above the QR block */}
           {isMobile && (
-            <div className="order-2 w-full pt-1 text-center lg:hidden">
+            <div className="w-full text-center lg:hidden">
               <a
                 href={intent.uri}
                 aria-describedby={warningId}
@@ -151,67 +122,106 @@ export function PayZone({ intent, errors, qr, onPaidClick }: PayZoneProps): JSX.
             </div>
           )}
 
-          {/* QR code: phone order 4, desktop order 3 */}
-          <div className="order-4 flex justify-center lg:order-3">
-            {qr !== null ? (
-              <QrCode
-                svgDataUrl={qr.svgDataUrl}
-                alt={strings.qrAlt(intent.vpa, formatRupees(payableRupees))}
-              />
-            ) : (
-              <p className="py-6 text-center text-[13px] text-chai-muted">
-                {strings.qrUnavailable}
-              </p>
-            )}
-          </div>
+          {/* Compact card: max height about 240px on desktop */}
+          <div className="w-full rounded-[20px] border border-chai-line bg-chai-surface p-4 shadow-sm sm:p-4.5">
+            {/* Top row: Amount & UPI ID on left, QR (about 140px) on right */}
+            <div className="flex items-center justify-between gap-3">
+              {/* Left: Amount and UPI ID */}
+              <div className="flex flex-col items-start justify-center">
+                <p className="sr-only">
+                  {strings.payingTo(formatRupees(payableRupees), intent.vpa)}
+                </p>
+                <div aria-hidden="true" className="chai-numeral flex items-baseline gap-1">
+                  <span className="text-[18px] font-semibold leading-none text-chai-accent sm:text-[20px]">
+                    ₹
+                  </span>
+                  <span className="relative inline-block h-[40px] overflow-hidden">
+                    {prevAmount !== null && (
+                      <span
+                        className="chai-amount-out absolute left-0 top-0 inline-block text-[36px] font-bold leading-none tracking-[-0.03em] sm:text-[40px]"
+                        aria-hidden="true"
+                      >
+                        {formatRupees(prevAmount)}
+                      </span>
+                    )}
+                    <span
+                      key={displayAmount}
+                      className={`${prevAmount !== null ? 'chai-amount-in' : ''} inline-block text-[36px] font-bold leading-none tracking-[-0.03em] sm:text-[40px]`}
+                    >
+                      {formatRupees(displayAmount ?? 0)}
+                    </span>
+                  </span>
+                </div>
+                <p aria-hidden="true" className="mt-1.5">
+                  <span className="inline-block whitespace-nowrap rounded-lg bg-chai-accent-soft px-2.5 py-1 font-vpa text-[12px] text-chai-ink">
+                    {intent.vpa}
+                  </span>
+                </p>
+              </div>
 
-          {/* Action buttons in one row: phone order 5, desktop order 4 */}
-          <div className="order-5 flex w-full max-w-[320px] gap-2 pt-1 lg:order-4">
-            <button
-              type="button"
-              onClick={handleCopy}
-              aria-live="polite"
-              className="chai-interactive-hover inline-flex min-h-[44px] flex-1 items-center justify-center gap-1.5 rounded-full border border-chai-line px-3 text-[13px] font-semibold text-chai-ink transition-colors hover:border-chai-accent hover:text-chai-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chai-accent"
-            >
-              {isCopied ? (
-                <>
-                  <Check aria-hidden="true" className="h-4 w-4 text-chai-accent" />
-                  <span>Copied</span>
-                </>
-              ) : (
-                <>
-                  <Copy aria-hidden="true" className="h-4 w-4" />
-                  <span>{strings.copyUpiId}</span>
-                </>
-              )}
-            </button>
-            {qr !== null && (
+              {/* Right: QR Code (about 140px) */}
+              <div className="shrink-0">
+                {qr !== null ? (
+                  <QrCode
+                    size="compact"
+                    svgDataUrl={qr.svgDataUrl}
+                    alt={strings.qrAlt(intent.vpa, formatRupees(payableRupees))}
+                    showCaption={false}
+                  />
+                ) : (
+                  <div className="flex h-[140px] w-[140px] items-center justify-center rounded-[14px] bg-chai-accent-soft p-2 text-center text-[12px] text-chai-muted">
+                    {strings.qrUnavailable}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Buttons in one row under them: Copy UPI ID, Save QR, I've paid (36 to 40px high) */}
+            <div className="mt-3 flex w-full gap-2">
               <button
                 type="button"
-                onClick={handleSaveQr}
-                className="chai-interactive-hover inline-flex min-h-[44px] flex-1 items-center justify-center gap-1.5 rounded-full border border-chai-line px-3 text-[13px] font-semibold text-chai-ink transition-colors hover:border-chai-accent hover:text-chai-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chai-accent"
+                onClick={handleCopy}
+                aria-live="polite"
+                className="chai-interactive-hover inline-flex h-9 min-h-[36px] max-h-[40px] flex-1 items-center justify-center gap-1.5 rounded-full border border-chai-line px-2 text-[12px] font-semibold text-chai-ink transition-colors hover:border-chai-accent hover:text-chai-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chai-accent"
               >
-                <Download aria-hidden="true" className="h-4 w-4" />
-                <span>{strings.qrDownload}</span>
+                {isCopied ? (
+                  <>
+                    <Check aria-hidden="true" className="h-3.5 w-3.5 text-chai-accent" />
+                    <span>Copied</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy aria-hidden="true" className="h-3.5 w-3.5" />
+                    <span>{strings.copyUpiId}</span>
+                  </>
+                )}
               </button>
-            )}
-          </div>
 
-          {/* Secondary "I've paid" button: phone order 6, desktop order 5 */}
-          <div className="order-6 text-center lg:order-5">
-            <button
-              type="button"
-              onClick={onPaidClick}
-              className="chai-interactive-hover inline-flex min-h-[36px] items-center rounded-full border border-chai-line/60 bg-transparent px-3.5 py-1 text-[12px] font-medium text-chai-muted transition-colors hover:border-chai-accent hover:text-chai-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chai-accent"
-            >
-              I&apos;ve paid
-            </button>
-          </div>
+              {qr !== null && (
+                <button
+                  type="button"
+                  onClick={handleSaveQr}
+                  className="chai-interactive-hover inline-flex h-9 min-h-[36px] max-h-[40px] flex-1 items-center justify-center gap-1.5 rounded-full border border-chai-line px-2 text-[12px] font-semibold text-chai-ink transition-colors hover:border-chai-accent hover:text-chai-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chai-accent"
+                >
+                  <Download aria-hidden="true" className="h-3.5 w-3.5" />
+                  <span>{strings.qrDownload}</span>
+                </button>
+              )}
 
-          {/* One-line "Scan with any UPI app" note: phone order 7, desktop order 6 */}
-          <p className="order-7 text-center text-[11px] leading-snug text-chai-muted lg:order-6">
-            {strings.qrCaption}
-          </p>
+              <button
+                type="button"
+                onClick={onPaidClick}
+                className="chai-interactive-hover inline-flex h-9 min-h-[36px] max-h-[40px] flex-1 items-center justify-center rounded-full border border-chai-line/80 bg-transparent px-2 text-[12px] font-medium text-chai-muted transition-colors hover:border-chai-accent hover:text-chai-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chai-accent"
+              >
+                I&apos;ve paid
+              </button>
+            </div>
+
+            {/* One line "Scan with any UPI app" note at 12px */}
+            <p className="mt-2 text-center text-[12px] leading-snug text-chai-muted">
+              {strings.qrCaption}
+            </p>
+          </div>
         </div>
       )}
 

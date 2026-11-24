@@ -6,9 +6,15 @@ export interface QrCodeProps {
   readonly svgDataUrl: string;
   readonly alt: string;
   readonly showCaption?: boolean;
+  readonly size?: 'compact' | 'standard';
 }
 
-export function QrCode({ svgDataUrl, alt, showCaption = true }: QrCodeProps): JSX.Element {
+export function QrCode({
+  svgDataUrl,
+  alt,
+  showCaption = true,
+  size = 'compact',
+}: QrCodeProps): JSX.Element {
   const [currentUrl, setCurrentUrl] = useState(svgDataUrl);
   const [prevUrl, setPrevUrl] = useState<string | null>(null);
 
@@ -23,22 +29,29 @@ export function QrCode({ svgDataUrl, alt, showCaption = true }: QrCodeProps): JS
     }
   }, [svgDataUrl, currentUrl]);
 
+  const isCompact = size === 'compact';
+  const boxClass = isCompact
+    ? 'relative h-[140px] w-[140px] overflow-hidden rounded-[14px] bg-white p-2 shadow-[0_1px_2px_rgb(43_29_20/0.08),0_8px_24px_rgb(43_29_20/0.08)] ring-1 ring-chai-line'
+    : 'relative h-[180px] w-[180px] overflow-hidden rounded-[16px] bg-white p-2.5 shadow-[0_1px_2px_rgb(43_29_20/0.08),0_8px_24px_rgb(43_29_20/0.08)] ring-1 ring-chai-line';
+
+  const imgClass = isCompact ? 'h-[124px] w-[124px]' : 'h-[160px] w-[160px]';
+
   return (
     <figure className="flex flex-col items-center gap-1.5">
-      <div className="relative h-[180px] w-[180px] overflow-hidden rounded-[16px] bg-white p-2.5 shadow-[0_1px_2px_rgb(43_29_20/0.08),0_8px_24px_rgb(43_29_20/0.08)] ring-1 ring-chai-line">
+      <div className={boxClass}>
         {prevUrl !== null && (
           <img
             src={prevUrl}
             alt=""
             aria-hidden="true"
-            className="chai-qr-fade-out pointer-events-none absolute inset-2.5 h-[160px] w-[160px]"
+            className={`chai-qr-fade-out pointer-events-none absolute inset-2 ${imgClass}`}
           />
         )}
         <img
           key={currentUrl}
           src={currentUrl}
           alt={alt}
-          className="chai-qr-fade-in absolute inset-2.5 h-[160px] w-[160px]"
+          className={`chai-qr-fade-in absolute inset-2 ${imgClass}`}
         />
       </div>
 

@@ -1,3 +1,4 @@
+import type React from 'react';
 import type { JSX } from 'react';
 import { useEffect, useState } from 'react';
 import { track } from '../analytics/index.ts';
@@ -6,8 +7,8 @@ import { useUpiIntent } from '../hooks/useUpiIntent.ts';
 import { formatRupees, parseRupees, sanitizeAmountInput } from '../lib/amount.ts';
 import { MAX_NOTE_LENGTH } from '../lib/upi.ts';
 import { strings } from '../strings.ts';
+import { ChaiSticker } from './ChaiSticker.tsx';
 import { PayZone } from './PayZone.tsx';
-import { ThankYouCard } from './ThankYouCard.tsx';
 
 /** Emoji detection for the "some apps drop emojis" nudge. Non-global: no lastIndex state. */
 const EMOJI_RE = /\p{Extended_Pictographic}/u;
@@ -22,9 +23,11 @@ type Selection = { readonly kind: 'preset'; readonly amount: number } | { readon
 
 export interface PaymentCardProps {
   readonly config: ChaiConfig;
+  readonly about?: React.ReactNode;
+  readonly works?: React.ReactNode;
 }
 
-export function PaymentCard({ config }: PaymentCardProps): JSX.Element {
+export function PaymentCard({ config, about, works }: PaymentCardProps): JSX.Element {
   const { creator, chai } = config;
   const presets = chai.presets;
 
@@ -80,26 +83,17 @@ export function PaymentCard({ config }: PaymentCardProps): JSX.Element {
   const activePresetIndex =
     selection.kind === 'preset' ? presets.findIndex((p) => p.amount === selection.amount) : -1;
 
-  if (hasPaid) {
-    return (
-      <section
-        aria-labelledby="chai-thank-you-heading"
-        className="mx-auto w-full max-w-[1100px] rounded-[20px] border border-chai-line bg-chai-surface p-6 shadow-[0_2px_4px_rgb(43_29_20/0.04),0_20px_50px_-20px_rgb(120_60_20/0.18)] sm:p-8"
-      >
-        <ThankYouCard onBack={() => setHasPaid(false)} />
-      </section>
-    );
-  }
-
   return (
-    <section
-      aria-labelledby="chai-payment-heading"
-      className="mx-auto w-full max-w-[1100px] rounded-[20px] border border-chai-line bg-chai-surface p-6 shadow-[0_2px_4px_rgb(43_29_20/0.04),0_20px_50px_-20px_rgb(120_60_20/0.18)] sm:p-8"
-    >
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:items-start lg:gap-12">
-        {/* ── Left Column: Heading, Chips, Custom Amount, Message ────────── */}
+    <div className="grid w-full grid-cols-1 items-start gap-6 lg:grid-cols-2 lg:gap-8">
+      {/* ── Right Column: Controls Card (first in DOM so chips receive first keyboard tab) ── */}
+      <section
+        id="chai-pay"
+        tabIndex={-1}
+        aria-labelledby="chai-payment-heading"
+        className="relative order-3 w-full scroll-mt-4 rounded-[20px] border border-chai-line bg-chai-surface p-6 shadow-sm outline-none sm:p-7 lg:col-start-2 lg:row-start-1"
+      >
         <div className="flex flex-col gap-5">
-          <div>
+          <div className="max-w-[calc(100%-130px)]">
             <p className="text-balance text-[11px] font-semibold uppercase tracking-[0.16em] text-chai-accent">
               {strings.disclosure}
             </p>
@@ -243,14 +237,33 @@ export function PaymentCard({ config }: PaymentCardProps): JSX.Element {
           </p>
         </div>
 
-        {/* Mobile divider */}
-        <div className="lg:hidden chai-tear -mx-6 sm:-mx-8" aria-hidden="true" />
+        {/* Desktop Sticker: placed at top right corner, overlaps card top edge by ~40px */}
+        <ChaiSticker
+          size="desktop"
+          className="pointer-events-none absolute -top-10 right-4 z-10 hidden lg:flex"
+        />
+      </section>
 
-        {/* ── Right Column: PayZone (GIF, Amount, QR, Buttons, "I've paid") ── */}
-        <div className="flex flex-col items-center justify-center lg:border-l lg:border-chai-line lg:pl-12">
-          <PayZone intent={intent} errors={errors} qr={qr} onPaidClick={() => setHasPaid(true)} />
+      {/* ── Left Column: About, Works, QR Block ──────────────────────────── */}
+      <div className="contents lg:col-start-1 lg:row-start-1 lg:flex lg:flex-col lg:gap-5">
+        {about && <div className="order-1">{about}</div>}
+        {works && <div className="order-2">{works}</div>}
+        <div className="order-4">
+          <PayZone
+            intent={intent}
+            errors={errors}
+            qr={qr}
+            onPaidClick={() => setHasPaid(true)}
+            hasPaid={hasPaid}
+            onBackToPay={() => setHasPaid(false)}
+          />
         </div>
       </div>
-    </section>
+
+      {/* ── Mobile Sticker: last in single-column order (smaller) ──────────── */}
+      <div className="order-5 flex w-full justify-center py-2 lg:hidden">
+        <ChaiSticker size="mobile" />
+      </div>
+    </div>
   );
 }
